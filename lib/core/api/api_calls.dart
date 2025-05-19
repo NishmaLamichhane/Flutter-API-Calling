@@ -22,4 +22,21 @@ class ApiCalls {
     throw CustomDioException.fromDioError(e);
     }
 }
+sendData({required String endpoint, required Map<String, dynamic> data})async{
+  // This method is used to send data to the API
+  // Use the http package to make a POST request to the API
+  // Use the json package to parse the response
+  // Return the parsed data
+  try{
+    final Dio dio =Dio(
+      BaseOptions(
+        baseUrl:ApiConstants.apiBaseUrl,
+      ),
+    );
+    final response = await dio.post(endpoint, data: data);
+    return response.data;
+  }on DioException catch(e){
+    throw CustomDioException.fromDioError(e);
+  }
+}
 }
