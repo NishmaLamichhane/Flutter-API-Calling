@@ -19,5 +19,12 @@ TodoBloc(this.todoRepository) : super(TodoInitial()){
        (success) => emit(FetchTodoLoaded(success)),
       );
     });
+    on <AddTodoEvent>((event, emit)async{
+      emit(AddTodoLoadingState());
+      final result = await todoRepository.storeTodo(data: event.formData);
+      result.fold((error)=>emit(AddTodoFailState(error: error.errorMessage)),
+       (success) => emit(AddTodoSuccessState(message: success)),
+      );
+    });
   }
 }
