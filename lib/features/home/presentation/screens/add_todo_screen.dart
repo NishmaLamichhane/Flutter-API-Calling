@@ -23,7 +23,9 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           if (state is AddTodoSuccessState) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ).showSnackBar(SnackBar(content: Text(state.message))); 
+            context.read<TodoBloc>().add(FetchTodoEvent());
+            Navigator.of(context).pop();
           }
           if (state is AddTodoFailState) {
             ScaffoldMessenger.of(
@@ -85,8 +87,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                               context.read<TodoBloc>().add(
                                 AddTodoEvent(formData: formData),
                               );
-                              context.read<TodoBloc>().add(FetchTodoEvent());
-                              Navigator.of(context).pop();
+                              
                             },
                             child: Text("Save"),
                           );
