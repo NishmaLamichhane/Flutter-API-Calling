@@ -10,10 +10,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   final TodoRepository todoRepository;
 TodoBloc(this.todoRepository) : super(TodoInitial()){
 
-    on<TodoEvent>((event, emit) {
-      // TODO: implement event handler
-    });
     on<FetchTodoEvent>((event, emit)async{
+      emit(FetchTodoLoading());
       final result = await todoRepository.fetchTodo();
       result.fold((error)=>emit(FetchTodoFail(error.errorMessage)),
        (success) => emit(FetchTodoLoaded(success)),

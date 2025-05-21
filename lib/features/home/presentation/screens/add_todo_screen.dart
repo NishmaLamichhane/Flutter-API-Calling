@@ -92,7 +92,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     BlocBuilder<TodoBloc, TodoState>(
                       builder: (context, state) {
                         return FilledButton.tonal(
-                          onPressed: () {
+                          onPressed: () async {
                             if (!_formKey.currentState!.validate()) {
                               return;
                             }
@@ -101,6 +101,14 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                               "title": title,
                               "description": description,
                             };
+print("add toodo: $state");
+                            context.read<TodoBloc>().add(AddTodoEvent(formData: formData));
+print("after add toodo: $state");
+                            
+                           
+                             context.read<TodoBloc>().add(FetchTodoEvent());
+                           
+                            Navigator.of(context).pop();
                           },
 
                           child: Text("Add"),

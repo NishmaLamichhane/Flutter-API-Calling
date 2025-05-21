@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final todoBloc = context.read<TodoBloc>().add(FetchTodoEvent());
+  context.read<TodoBloc>().add(FetchTodoEvent());
     return Scaffold(
       appBar: AppBar(
         title: Text("Todos"),
@@ -25,11 +25,12 @@ class HomeScreen extends StatelessWidget {
       ),
       body: BlocBuilder<TodoBloc, TodoState>(
         builder: (context, state) {
+          print(state);
           if (state is FetchTodoFail) {
             return Center(
               child: Text(state.error),
             );
-          } else if (state is FetchTodoLoaded) {
+          } else if (state is FetchTodoLoaded ) {
             return ListView.builder(
               itemBuilder: (ctx, index) {
                 return Padding(
