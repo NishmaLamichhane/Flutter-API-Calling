@@ -10,125 +10,98 @@ class AddTodoScreen extends StatefulWidget {
 }
 
 class _AddTodoScreenState extends State<AddTodoScreen> {
-  final _formKey = GlobalKey<FormState>();
   String? title;
   String? description;
+  final GlobalKey<FormState> addTodoForm = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Add Todo")),
+      appBar: AppBar(title: Text("TodoForm")),
       body: BlocListener<TodoBloc, TodoState>(
         listener: (context, state) {
           if (state is AddTodoSuccessState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.green,
-              ),
-            );
-            Navigator.pop(context);
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
           if (state is AddTodoFailState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error), backgroundColor: Colors.red),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.error)));
           }
-          // TODO: implement listener
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              spacing: 20,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Title"),
-                TextFormField(
-                  onSaved: (newValue) {
-                    setState(() {
-                      title = newValue;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter a title";
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Write the title",
-                    label: Text("Title"),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16, left: 16),
+            child: Form(
+              key: addTodoForm,
+              child: Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(hintText: "Title"),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Provide Title";
+                      } else {
+                        return null;
+                      }
+                    },
+                    onSaved: (value) {
+                      title = value;
+                    },
+                    onTapOutside: (e) => FocusScope.of(context).unfocus(),
                   ),
-                ),
-                Text("Description"),
-                TextFormField(
-                  onSaved: (newValue) {
-                    setState(() {
-                      description = newValue;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter a title";
-                    }
-                    return null;
-                  },
-                  minLines: 6,
-                  maxLines: 10,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Write the description",
-                    label: Text("Description"),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                  TextFormField(
+                    decoration: InputDecoration(hintText: "Description"),
+                    maxLines: 6,
+                    minLines: 3,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Provide Description";
+                      } else {
+                        return null;
+                      }
+                    },
+                    onSaved: (value) {
+                      description = value;
+                    },
+                    onTapOutside: (e) => FocusScope.of(context).unfocus(),
                   ),
-                ),
-                Row(
-                  spacing: 20,
-                  children: [
-                    BlocBuilder<TodoBloc, TodoState>(
-                      builder: (context, state) {
-                        return FilledButton.tonal(
-                          onPressed: () async {
-                            if (!_formKey.currentState!.validate()) {
-                              return;
-                            }
-                            _formKey.currentState!.save();
-                            final Map<String, dynamic> formData = {
-                              "title": title,
-                              "description": description,
-                            };
-print("add toodo: $state");
-                            context.read<TodoBloc>().add(AddTodoEvent(formData: formData));
-print("after add toodo: $state");
-                            
-                           
-                             context.read<TodoBloc>().add(FetchTodoEvent());
-                           
-                            Navigator.of(context).pop();
-                          },
-
-                          child: Text("Add"),
-                        );
-                      },
-                    ),
-                    FilledButton.tonal(
-                      onPressed: () {},
-                      child: Text(
-                        "Cancel",
-                        style: TextStyle(color: Colors.white),
+                  Row(
+                    children: [
+                      BlocBuilder<TodoBloc, TodoState>(
+                        builder: (context, state) {
+                          return ElevatedButton(
+                            onPressed: () {
+                              if (!addTodoForm.currentState!.validate()) {
+                                return;
+                              }
+                              addTodoForm.currentState!.save();
+                              final Map<String, dynamic> formData = {
+                                'title': title,
+                                'description': description,
+                              };
+                              context.read<TodoBloc>().add(
+                                AddTodoEvent(formData: formData),
+                              );
+                              context.read<TodoBloc>().add(FetchTodoEvent());
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Save"),
+                          );
+                        },
                       ),
-
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.red,
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Cancel"),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
