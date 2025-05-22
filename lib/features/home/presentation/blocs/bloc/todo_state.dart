@@ -13,7 +13,7 @@ class FetchTodoLoaded extends TodoState {
   final List<Todo> todos;
   FetchTodoLoaded(this.todos);
 }
-
+//mero api call huda k k state aauna sakxa define garne->loading, success, fail
 /// This state is emitted when there is an error loading the todo list.
 class FetchTodoFail extends TodoState {
   final String error;

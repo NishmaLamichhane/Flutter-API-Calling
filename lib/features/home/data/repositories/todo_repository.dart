@@ -11,7 +11,7 @@ class TodoRepositoryImpl extends TodoRepository {
   final TodoDataSource todoDataSource;
 
   TodoRepositoryImpl({required this.todoDataSource});
-
+//Left side is the error and right side is the success
   @override
   Future<Either<ApiErorr, List<Todo>>> fetchTodo() async {
     try {
