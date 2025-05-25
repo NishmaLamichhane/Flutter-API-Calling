@@ -8,14 +8,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  context.read<TodoBloc>().add(FetchTodoEvent());
+    context.read<TodoBloc>().add(FetchTodoEvent());
     return Scaffold(
       appBar: AppBar(
         title: Text("Todos"),
         actions: [
           GestureDetector(
-            onTap: () =>
-                Navigator.of(context).pushNamed(AppRoutes.addTodoScreen),
+            onTap:
+                () => Navigator.of(context).pushNamed(AppRoutes.addTodoScreen),
             child: Padding(
               padding: const EdgeInsets.only(right: 8),
               child: Icon(Icons.add),
@@ -23,45 +23,70 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<TodoBloc, TodoState>(
-        builder: (context, state) {
-          print(state);
-          if (state is FetchTodoFail) {
-            return Center(
-              child: Text(state.error),
+      body: BlocConsumer<TodoBloc, TodoState>(
+        listener: (context, state) {
+          if(state is DeleteTodoSuccessState) {
+            context.read<TodoBloc>().add(FetchTodoEvent()); //refresh the list
+            // Show a snackbar when todo is deleted successfully
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Todo Deleted Successfully ✅"),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
             );
-          } else if (state is FetchTodoLoaded ) {
-            return ListView.builder(
-              itemBuilder: (ctx, index) {
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Card(
-                    child: ListTile(
-                      leading: Checkbox(
-                        value: state.todos[index].isCompleted,
-                        onChanged: (value) {},
-                      ),
-                      title: Text(state.todos[index].title),
-                      subtitle: Text(state.todos[index].description),
-                      trailing: IconButton.filledTonal(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-              itemCount: state.todos.length,
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
+          } else if (state is DeleteTodoFailState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 2),
+              ),
             );
           }
+          // TODO: implement listener
+        },
+        builder: (context, state) {
+          return BlocBuilder<TodoBloc, TodoState>(
+            builder: (context, state) {
+              print(state);
+              if (state is FetchTodoFail) {
+                return Center(child: Text(state.error));
+              } else if (state is FetchTodoLoaded) {
+                return ListView.builder(
+                  itemBuilder: (ctx, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      child: Card(
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: state.todos[index].isCompleted,
+                            onChanged: (value) {},
+                          ),
+                          title: Text(state.todos[index].title),
+                          subtitle: Text(state.todos[index].description),
+                          trailing: IconButton.filledTonal(
+                            onPressed: () {
+                              context.read<TodoBloc>().add(
+                                DeleteTodoEvent(id: state.todos[index].id),
+                              );
+                            },
+                            icon: Icon(Icons.delete_outline, color: Colors.red),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: state.todos.length,
+                );
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
+          );
         },
       ),
     );
