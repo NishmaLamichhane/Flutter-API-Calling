@@ -30,3 +30,14 @@ class AddTodoFailState extends TodoState {
   final String error;
   AddTodoFailState({required this.error});
 }
+class DeleteTodoLoadingState extends TodoState {
+
+}
+class DeleteTodoSuccessState extends TodoState {
+  final String message;
+  DeleteTodoSuccessState({required this.message});
+}
+class DeleteTodoFailState extends TodoState {
+  final String error;
+  DeleteTodoFailState({required this.error});
+}

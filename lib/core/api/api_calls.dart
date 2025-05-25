@@ -39,4 +39,21 @@ sendData({required String endpoint, required Map<String, dynamic> data})async{
     throw CustomDioException.fromDioError(e);
   }
 }
+
+  deleteData({required String endpoint}) async{
+    // This method is used to delete data from the API
+    // Use the json package to parse the response
+    // Return the parsed data
+    try{
+      final Dio dio =Dio(
+        BaseOptions(
+          baseUrl:ApiConstants.apiBaseUrl,
+        ),
+      );
+      final response = await dio.delete(endpoint);
+      return response.data;
+    }on DioException catch(e){
+      throw CustomDioException.fromDioError(e);
+    }
+  }
 }
